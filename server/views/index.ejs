@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <title>
+      <%= title %>
+    </title>
+    <link href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>
+        <%= title %>
+      </h1>
+      <div class="row">
+        <div class="col-md-4">
+          <div class="form-group">
+            <select class="form-control">
+              <option value="qa">集测</option>
+              <option value="dev">开发</option>
+              <option value="release">公网</option>
+		        </select>
+          </div>
+        </div>
+        <div class="col-md-8">
+          <div class="form-group">
+            <input type="text" class="form-control">
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+
+</html>
