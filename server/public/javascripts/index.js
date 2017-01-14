@@ -1,7 +1,5 @@
 'use strict';
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
 /******/(function (modules) {
 	// webpackBootstrap
 	/******/ // The module cache
@@ -50,89 +48,20 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 /* 0 */
 /***/function (module, exports) {
 
-	'use strict';
-
-	;(function (globle, undefined) {
-		function RemoteConsole(obj) {
-			this.config = obj;
-		}
-		RemoteConsole.prototype = {
-			init: function init() {
-				if (!this.check()) return;
-				if (this.config.upload) {
-					this.io();
-				}
-				this.override();
-			},
-			check: function check() {
-				try {
-					console.log('😀😀😀😀');
-					return true;
-				} catch (error) {
-					return false;
-				}
-			},
-			override: function override() {
-				var types = {
-					_log: console.log,
-					_info: console.info,
-					_warn: console.warn,
-					_error: console.error
-				};
-
-				var _loop = function _loop(x) {
-					var type = x.replace('_', '');
-					console[type] = function () {
-						var args = arguments;
-						if (args.length == 1) {
-							types[x](args[0]);
-						} else {
-							var flag = [].concat(_toConsumableArray(args)).every(function (t, i) {
-								return typeof t === 'string';
-							});
-							if (flag) {
-								types[x]([].concat(_toConsumableArray(args)).toString());
-							} else {
-								types[x]([].concat(_toConsumableArray(args)));
-							}
-						}
-					};
-				};
-
-				for (var x in types) {
-					_loop(x);
-				}
-			},
-			io: function (_io) {
-				function io() {
-					return _io.apply(this, arguments);
-				}
-
-				io.toString = function () {
-					return _io.toString();
-				};
-
-				return io;
-			}(function () {
-				if (!window.io) return;
-				window.socket = io.connect(this.config.host);
-				socket.on('run', function (data) {
-					try {
-						eval(data);
-					} catch (error) {
-						console.log(error);
-					}
-				});
-				socket.emit('conn', this.config.ext);
-			})
-		};
-		globle.rc = {
-			init: function init(obj) {
-				var rc = new RemoteConsole(obj);
-				rc.init();
-			}
-		};
-	})(window, undefined);
+	$(function () {
+		if (!window.io) return;
+		var socket = io.connect('http://192.168.1.38:8888');
+		socket.on('connection', function () {
+			socket.emit('register', 'admin');
+		});
+		$('#run').click(function () {
+			var code = $('#js').val();
+			socket.emit('run', {
+				name: window.location.search.replace('?/name=', ''),
+				code: code
+			});
+		});
+	});
 
 	/***/
 }
