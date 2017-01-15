@@ -2,6 +2,7 @@
 ; (function (globle, undefined) {
   function RemoteConsole(obj) {
     this.config = obj;
+    this.config.url = window.location.href;
   }
   RemoteConsole.prototype = {
     init: function () {
@@ -35,7 +36,7 @@
         console[type] = function () {
           let argsArr = [...arguments];
           let clone = argsArr.map((v, i) => {
-            return v instanceof Object ? JSON.parse(JSON.stringify(v)) : v;
+            return v instanceof Object ? Object.create(v).__proto__ : v;
           })
           types[x].apply(console[type], argsArr);
           socket.emit('console', {
@@ -45,16 +46,26 @@
           });
         }
       }
+      if (window.onerror) {
+        olderror = window.onerror;
+        window.onerror = function (msg, url, line,col,error) {
+          olderror.apply(null, Array.from(arguments))
+          let err = `${msg} in ${url} \n at line ${line} and col ${col} \n `
+          console.error(err);
+        }
+      }
+      else {
+        window.onerror = function (msg, url, line, col, error) {
+          let err = `${msg} in ${url} \n at line ${line} and col ${col} \n `
+          console.error(err)
+        }
+      }
     },
     io: function () {
       if (!window.io) return;
       window.socket = io.connect(this.config.host)
-      socket.on('run', (data) => {
-        try {
-          eval(code);
-        } catch (error) {
-          console.log(error)
-        }
+      socket.on('run', (code) => {
+        eval(code)
       });
       let config = this.config;
       socket.on('connected', () => {

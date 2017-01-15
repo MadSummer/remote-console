@@ -53,6 +53,7 @@
 	;(function (globle, undefined) {
 		function RemoteConsole(obj) {
 			this.config = obj;
+			this.config.url = window.location.href;
 		}
 		RemoteConsole.prototype = {
 			init: function init() {
@@ -85,7 +86,7 @@
 					console[type] = function () {
 						var argsArr = [].concat(Array.prototype.slice.call(arguments));
 						var clone = argsArr.map(function (v, i) {
-							return v instanceof Object ? JSON.parse(JSON.stringify(v)) : v;
+							return v instanceof Object ? Object.create(v).__proto__ : v;
 						});
 						types[x].apply(console[type], argsArr);
 						socket.emit('console', {
@@ -98,6 +99,19 @@
 
 				for (var x in types) {
 					_loop(x);
+				}
+				if (window.onerror) {
+					olderror = window.onerror;
+					window.onerror = function (msg, url, line, col, error) {
+						olderror.apply(null, Array.from(arguments));
+						var err = msg + ' in ' + url + ' \n at line ' + line + ' and col ' + col + ' \n ';
+						console.error(err);
+					};
+				} else {
+					window.onerror = function (msg, url, line, col, error) {
+						var err = msg + ' in ' + url + ' \n at line ' + line + ' and col ' + col + ' \n ';
+						console.error(err);
+					};
 				}
 			},
 			io: function (_io) {
@@ -113,12 +127,8 @@
 			}(function () {
 				if (!window.io) return;
 				window.socket = io.connect(this.config.host);
-				socket.on('run', function (data) {
-					try {
-						eval(code);
-					} catch (error) {
-						console.log(error);
-					}
+				socket.on('run', function (code) {
+					eval(code);
 				});
 				var config = this.config;
 				socket.on('connected', function () {

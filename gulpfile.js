@@ -13,7 +13,7 @@ gulp.task('less', () => {
     .pipe(gulp.dest('./stylesheets'));
 })
 gulp.task('clientjs', () => {
-  gulp.src('./client/src/*.js')
+  gulp.src('./client/src/remote-console.js')
     /*.pipe(browserify({
       insertGlobals: true,
       debug: !gulp.env.production
@@ -26,11 +26,11 @@ gulp.task('clientjs', () => {
     }))
     //.pipe(uglify())
     .pipe(rename('rc.js'))
-    .pipe(gulp.dest('./client/dist'))
+    //.pipe(gulp.dest('./client/dist'))
     .pipe(gulp.dest('./server/public/javascripts/'))
 });
 gulp.task('serverjs', () => {
-  gulp.src('./server/public/javascripts/server.js')
+  gulp.src('./client/src/server.js')
     .pipe(webpack(
       require('./webpack.config')
     ))
@@ -38,10 +38,11 @@ gulp.task('serverjs', () => {
       presets: ['es2015']
     }))
     //.pipe(uglify())
+    .pipe(rename('rc-remote.js'))
     .pipe(gulp.dest('./server/public/javascripts/'))
 });
 //gulp.task('default', ['less', 'js']);
 gulp.task('watch', () => {
-  gulp.watch('./client/src/*.js', ['clientjs']);
+  gulp.watch('./client/src/*.js', ['clientjs','serverjs']);
   //gulp.watch('./server/public/javascripts/server.js', ['serverjs']);
 })

@@ -48,20 +48,25 @@
 /* 0 */
 /***/function (module, exports) {
 
-	$(function () {
+	;(function () {
 		if (!window.io) return;
-		var socket = io.connect('http://192.168.1.38:8888');
-		socket.on('connection', function () {
-			socket.emit('register', 'admin');
+		var socket = io.connect('http://192.168.123.76:8888');
+		var name = window.location.search.replace('?name=', '') + '_remote';
+		socket.on('connected', function () {
+			socket.emit('register', { name: name });
 		});
-		$('#run').click(function () {
-			var code = $('#js').val();
+		socket.on('console', function (data) {
+			console[data.type].apply(null, data.console);
+		});
+		var btn = document.querySelector('#run');
+		btn.addEventListener('click', function () {
+			var code = document.querySelector('#code').value;
 			socket.emit('run', {
-				name: window.location.search.replace('?/name=', ''),
+				name: window.location.search.replace('?name=', ''),
 				code: code
 			});
 		});
-	});
+	})();
 
 	/***/
 }

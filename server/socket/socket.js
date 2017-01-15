@@ -1,11 +1,12 @@
 const io = require('socket.io');
+const saveLogs = require('../save/save');
 let ss = {
   client: new Map(),
   io: {},
   init: function (server) {
     this.io = io(server);
     this.io.on('connection', socket => {
-      //第一次连接，发送connection信令
+      //第一次连接，发送connected信令
       socket.emit('connected');
       //客户端注册socket，统一进行管理
       socket.on('register', client => {
@@ -13,6 +14,7 @@ let ss = {
         this.register(client);
       });
       socket.on('console', data => {
+        this.save(data);
         this.emitClient(data.name + '_remote', 'console', data);
       });
       socket.on('run', data => {
@@ -35,9 +37,21 @@ let ss = {
     try {
       this.io.sockets.sockets[id].emit(type, data)
     } catch (error) {
-      
+
     }
-    
+
+  },
+  save: function (data) {
+    let client = this.client.get(data.name)
+    if (client) {
+      let logData = data.type + ' : ';
+      data.console.forEach(v => {
+        logData += v.toString();
+      });
+      logData += '\n';
+      console.log(logData);
+      saveLogs.save(client.url + data.name + '.log', logData);
+    }
   }
 };
 module.exports = ss;
