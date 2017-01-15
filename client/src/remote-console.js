@@ -5,15 +5,13 @@
   }
   RemoteConsole.prototype = {
     init: function () {
-      if (!this.check()) return;
-      if (!this.isPC()) {
-        try {
-          this.io();
-          this.override();
-        } catch (error) {
-          
-        }
-        
+      if (this.isPC() && !this.config.pc) return;
+      if (!this.check()) return alert('浏览器不支持console');
+      try {
+        this.io();
+        this.override();
+      } catch (error) {
+
       }
     },
     check: function () {
@@ -36,14 +34,15 @@
         let type = x.replace('_', '');
         console[type] = function () {
           let argsArr = [...arguments];
+          let clone = argsArr.map((v, i) => {
+            return v instanceof Object ? JSON.parse(JSON.stringify(v)) : v;
+          })
           types[x].apply(console[type], argsArr);
-          if (config.upload) {
-            socket.emit('console', {
-              type:type,
-              msg: argsArr,
-              name:config.name
-            });
-          }
+          socket.emit('console', {
+            type: type,
+            console: clone,
+            name: config.name
+          });
         }
       }
     },
@@ -52,13 +51,14 @@
       window.socket = io.connect(this.config.host)
       socket.on('run', (data) => {
         try {
-          eval(data.msg);
+          eval(code);
         } catch (error) {
           console.log(error)
         }
       });
-      socket.on('connection', () => {
-        socket.emit('register',this.config.name)
+      let config = this.config;
+      socket.on('connected', () => {
+        socket.emit('register', config)
       })
     },
     isPC: () => {

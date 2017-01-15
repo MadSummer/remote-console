@@ -40,7 +40,7 @@ gulp.task('serverjs', () => {
     //.pipe(uglify())
     .pipe(gulp.dest('./server/public/javascripts/'))
 });
-gulp.task('default', ['less', 'js']);
+//gulp.task('default', ['less', 'js']);
 gulp.task('watch', () => {
   gulp.watch('./client/src/*.js', ['clientjs']);
   //gulp.watch('./server/public/javascripts/server.js', ['serverjs']);

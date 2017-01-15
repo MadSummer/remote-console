@@ -56,13 +56,12 @@
 		}
 		RemoteConsole.prototype = {
 			init: function init() {
-				if (!this.check()) return;
-				if (!this.isPC()) {
-					try {
-						this.io();
-						this.override();
-					} catch (error) {}
-				}
+				if (this.isPC() && !this.config.pc) return;
+				if (!this.check()) return alert('浏览器不支持console');
+				try {
+					this.io();
+					this.override();
+				} catch (error) {}
 			},
 			check: function check() {
 				try {
@@ -85,14 +84,15 @@
 					var type = x.replace('_', '');
 					console[type] = function () {
 						var argsArr = [].concat(Array.prototype.slice.call(arguments));
+						var clone = argsArr.map(function (v, i) {
+							return v instanceof Object ? JSON.parse(JSON.stringify(v)) : v;
+						});
 						types[x].apply(console[type], argsArr);
-						if (config.upload) {
-							socket.emit('console', {
-								type: type,
-								msg: argsArr,
-								name: config.name
-							});
-						}
+						socket.emit('console', {
+							type: type,
+							console: clone,
+							name: config.name
+						});
 					};
 				};
 
@@ -111,19 +111,18 @@
 
 				return io;
 			}(function () {
-				var _this = this;
-
 				if (!window.io) return;
 				window.socket = io.connect(this.config.host);
 				socket.on('run', function (data) {
 					try {
-						eval(data.msg);
+						eval(code);
 					} catch (error) {
 						console.log(error);
 					}
 				});
-				socket.on('connection', function () {
-					socket.emit('register', _this.config.name);
+				var config = this.config;
+				socket.on('connected', function () {
+					socket.emit('register', config);
 				});
 			}),
 			isPC: function isPC() {
