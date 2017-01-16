@@ -49,8 +49,8 @@
 /***/function (module, exports) {
 
 	'use strict';
-
-	;(function (globle, undefined) {
+	;
+	(function (globle, undefined) {
 		function RemoteConsole(obj) {
 			this.config = obj;
 			this.config.url = window.location.href;
@@ -79,6 +79,14 @@
 					_warn: console.warn,
 					_error: console.error
 				};
+				var olderror = window.onerror;
+				window.onerror = function (msg, url, line, col, error) {
+					if (olderror) {
+						olderror.apply(null, Array.from(arguments));
+					}
+					var err = msg + ' in ' + url + ' \n at line ' + line + ' and col ' + col + ' \n ';
+					alert(err);
+				};
 				var config = this.config;
 
 				var _loop = function _loop(x) {
@@ -86,12 +94,12 @@
 					console[type] = function () {
 						var argsArr = [].concat(Array.prototype.slice.call(arguments));
 						var clone = argsArr.map(function (v, i) {
-							return v instanceof Object ? Object.create(v).__proto__ : v;
+							return v instanceof Object ? Object.create(v).__proto__ ? Object.create(v).__proto__ : v : v;
 						});
-						types[x].apply(console[type], argsArr);
+						//types[x].apply(null, argsArr);
 						socket.emit('console', {
 							type: type,
-							console: clone,
+							console: argsArr,
 							name: config.name
 						});
 					};
@@ -99,19 +107,6 @@
 
 				for (var x in types) {
 					_loop(x);
-				}
-				if (window.onerror) {
-					olderror = window.onerror;
-					window.onerror = function (msg, url, line, col, error) {
-						olderror.apply(null, Array.from(arguments));
-						var err = msg + ' in ' + url + ' \n at line ' + line + ' and col ' + col + ' \n ';
-						console.error(err);
-					};
-				} else {
-					window.onerror = function (msg, url, line, col, error) {
-						var err = msg + ' in ' + url + ' \n at line ' + line + ' and col ' + col + ' \n ';
-						console.error(err);
-					};
 				}
 			},
 			io: function (_io) {

@@ -14,8 +14,14 @@
       <h1>
         <%= title %>
       </h1>
+      <blockquote cite="">
+        完整日志流程：<br>
+        1、手机端弹窗提示注册的name。<br>
+        2、电脑端打开想对应的地址。 <br>
+        3、手机端确定。<br>
+      </blockquote>
       <div class="row">
-        <div class="col-md-4">
+        <!--<div class="col-md-4">
           <div class="form-group">
             <select class="form-control">
               <option value="qa">集测</option>
@@ -24,9 +30,14 @@
 		        </select>
           </div>
         </div>
-        <div class="col-md-8">
+        <div class="col-md-4">
           <div class="form-group">
             <input type="text" class="form-control">
+          </div>
+        </div>-->
+        <div class="col-md-4">
+          <div class="form-group">
+            <a href="<%= log %>" class="btn btn-primary" target="_blank">查看log文件</a>
           </div>
         </div>
       </div>

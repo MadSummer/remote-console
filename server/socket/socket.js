@@ -20,6 +20,9 @@ let ss = {
       socket.on('run', data => {
         this.emitClient(data.name, 'run', data.code);
       });
+      socket.on('disconnect', () => {
+        //
+      })
     });
   },
   register: function (client) {
@@ -49,8 +52,8 @@ let ss = {
         logData += v.toString();
       });
       logData += '\n';
-      console.log(logData);
-      saveLogs.save(client.url + data.name + '.log', logData);
+      //console.log(logData);
+      saveLogs.save(client.url + '/' + data.name + '.log', logData);
     }
   }
 };

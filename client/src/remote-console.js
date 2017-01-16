@@ -1,5 +1,5 @@
-'use strict';
-; (function (globle, undefined) {
+'use strict';;
+(function (globle, undefined) {
   function RemoteConsole(obj) {
     this.config = obj;
     this.config.url = window.location.href;
@@ -29,35 +29,29 @@
         _info: console.info,
         _warn: console.warn,
         _error: console.error
+      };
+      let olderror = window.onerror;
+      window.onerror = function (msg, url, line, col, error) {
+        if (olderror) {
+          olderror.apply(null, Array.from(arguments))
+        }
+        let err = `${msg} in ${url} \n at line ${line} and col ${col} \n `
+        alert(err);
       }
-      let config = this.config
+      let config = this.config;
       for (let x in types) {
         let type = x.replace('_', '');
         console[type] = function () {
           let argsArr = [...arguments];
           let clone = argsArr.map((v, i) => {
-            return v instanceof Object ? Object.create(v).__proto__ : v;
+            return v instanceof Object ? Object.create(v).__proto__ ? Object.create(v).__proto__ : v : v;
           })
-          types[x].apply(console[type], argsArr);
+          //types[x].apply(null, argsArr);
           socket.emit('console', {
             type: type,
-            console: clone,
+            console: argsArr,
             name: config.name
           });
-        }
-      }
-      if (window.onerror) {
-        olderror = window.onerror;
-        window.onerror = function (msg, url, line,col,error) {
-          olderror.apply(null, Array.from(arguments))
-          let err = `${msg} in ${url} \n at line ${line} and col ${col} \n `
-          console.error(err);
-        }
-      }
-      else {
-        window.onerror = function (msg, url, line, col, error) {
-          let err = `${msg} in ${url} \n at line ${line} and col ${col} \n `
-          console.error(err)
         }
       }
     },
@@ -96,4 +90,3 @@
     }
   }
 })(window, undefined);
-

@@ -8,14 +8,15 @@ let saveLogs = {
     let logUrlObj = url.parse(logUrl);
     let logPath = path.normalize(logUrlObj.host + logUrlObj.path);
     let fileName;
-    try {
-      fileName = logPath.replace(new RegExp(path.sep, 'g'), '-');
+    /*try {
+      fileName = logPath.replace(new RegExp(path.sep, 'g'), '-').replace(':', '-');
     } catch (error) {
-      fileName = logPath.replace(new RegExp(path.sep + '\\', 'g'), '-');
-    }
+      fileName = logPath.replace(new RegExp(path.sep + '\\', 'g'), '-').replace(':', '-');
+    }*/
 
     let logsPath = path.normalize('./server/logs');
     let fullPathParse = path.parse(logPath);
+    fileName = fullPathParse.base;
     let file = fullPathParse.base;
     let dir = fullPathParse.dir;
     // base:"20170115153540.log"
@@ -32,20 +33,19 @@ let saveLogs = {
       function (r, done) {
         if (r) {
           done(null, path.resolve(logsPath));
-        }
-        else {
+        } else {
           fs.mkdir(logsPath, err => {
             done(err, path.resolve(logsPath))
           })
         }
       },
       function (now, done) {
-        fs.appendFile(path.join(now,fileName), data, err => {
+        fs.appendFile(path.join(now, fileName), data, err => {
           done(err);
         })
       }
     ], (err, res) => {
-      console.log(err);
+      //console.log(err);
     })
   }
 }

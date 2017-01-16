@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 /******/(function (modules) {
 	// webpackBootstrap
@@ -48,12 +48,22 @@
 /* 0 */
 /***/function (module, exports) {
 
-	;(function () {
+	;
+	(function () {
 		if (!window.io) return;
-		var socket = io.connect('http://192.168.123.76:8888');
-		var name = window.location.search.replace('?name=', '') + '_remote';
+		var socket = io.connect('http://192.168.1.38:8888');
+
+		function querystring(name) {
+			var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+			var r = window.location.search.substr(1).match(reg);
+			if (r != null) return unescape(r[2]);
+			return null;
+		}
 		socket.on('connected', function () {
-			socket.emit('register', { name: name });
+			socket.emit('register', {
+				name: querystring('name') + '_remote',
+				url: querystring('url')
+			});
 		});
 		socket.on('console', function (data) {
 			console[data.type].apply(null, data.console);
@@ -62,7 +72,7 @@
 		btn.addEventListener('click', function () {
 			var code = document.querySelector('#code').value;
 			socket.emit('run', {
-				name: window.location.search.replace('?name=', ''),
+				name: querystring('name'),
 				code: code
 			});
 		});
