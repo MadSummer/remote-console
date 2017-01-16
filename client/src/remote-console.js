@@ -2,12 +2,15 @@
 (function (globle, undefined) {
   function RemoteConsole(obj) {
     this.config = obj;
-    this.config.url = window.location.href;
   }
   RemoteConsole.prototype = {
     init: function () {
       if (this.isPC() && !this.config.pc) return;
       if (!this.check()) return alert('浏览器不支持console');
+      if (!this.config.name) {
+        this.config.name = Math.random().toString().substr(2, 5);
+        alert(this.config.name);
+      }
       try {
         this.io();
         this.override();
@@ -36,6 +39,7 @@
           olderror.apply(null, Array.from(arguments))
         }
         let err = `${msg} in ${url} \n at line ${line} and col ${col} \n `
+        console.error(err);
         alert(err);
       }
       let config = this.config;
