@@ -66,7 +66,7 @@
 			});
 		});
 		socket.on('console', function (data) {
-			console[data.type].apply(null, data.console);
+			console[data.type].apply(console, data.console);
 		});
 		var btn = document.querySelector('#run');
 		btn.addEventListener('click', function () {

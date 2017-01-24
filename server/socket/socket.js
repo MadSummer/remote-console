@@ -45,7 +45,7 @@ let ss = {
 
   },
   save: function (data) {
-    let client = this.client.get(data.name)
+    let client = this.client.get(data.name);
     if (client) {
       let logData = data.type + ' : ';
       data.console.forEach(v => {

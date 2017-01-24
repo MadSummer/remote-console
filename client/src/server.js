@@ -16,7 +16,7 @@
     });
   });
   socket.on('console', (data) => {
-    console[data.type].apply(null, data.console);
+    console[data.type].apply(console, data.console);
   });
   let btn = document.querySelector('#run');
   btn.addEventListener('click', () => {

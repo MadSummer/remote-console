@@ -40,7 +40,7 @@
         }
         let err = `${msg} in ${url} \n at line ${line} and col ${col} \n `
         console.error(err);
-        alert(err);
+        //alert(err);
       }
       let config = this.config;
       for (let x in types) {
@@ -50,7 +50,7 @@
           let clone = argsArr.map((v, i) => {
             return v instanceof Object ? Object.create(v).__proto__ ? Object.create(v).__proto__ : v : v;
           })
-          //types[x].apply(null, argsArr);
+          types[x].apply(console, argsArr);
           socket.emit('console', {
             type: type,
             console: argsArr,

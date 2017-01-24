@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const url = require('url');
 const async = require('async');
+const mkdirp = require('mkdirp');
 //根据url创建文件夹
 let saveLogs = {
   save: (logUrl, data) => {
