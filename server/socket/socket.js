@@ -49,7 +49,9 @@ let ss = {
     if (client) {
       let logData = data.type + ' : ';
       data.console.forEach(v => {
-        logData += v.toString();
+        if (!v) {
+          logData += v.toString();
+        }
       });
       logData += '\n';
       //console.log(logData);
