@@ -51,7 +51,7 @@
 	;
 	(function () {
 		if (!window.io) return;
-		var socket = io.connect('http://192.168.191.1:8888');
+		var socket = io.connect('http://121.42.33.7:8888');
 
 		function querystring(name) {
 			var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");

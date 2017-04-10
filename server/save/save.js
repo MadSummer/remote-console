@@ -3,6 +3,7 @@ const path = require('path');
 const url = require('url');
 const async = require('async');
 const mkdirp = require('mkdirp');
+const co = require('co');
 //根据url创建文件夹
 let saveLogs = {
   save: (logUrl, data) => {
@@ -25,6 +26,10 @@ let saveLogs = {
     // ext:".log"
     // name:"20170115153540"
     // root:""
+    co(function* () {
+      yield fs.exists(logsPath, r => { done(null, r); });
+      
+    });
     async.waterfall([
       function (done) {
         fs.exists(logsPath, r => {
